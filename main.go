@@ -22,10 +22,15 @@ func Eq(a, b Any) bool {
 	switch aVal := a.(type) {
 	case int :
 		bVal, bCastOk := b.(int)
+		//fmt.Println("...", aVal , "vs", bVal)
 		if !bCastOk {
+			//fmt.Println(">>CastBad")
 			return false
 		}
-		return aVal == bVal
+		
+		retval := aVal == bVal
+		//fmt.Println(">>T",retval)
+		return retval
 	default:
 		panic("I dont support EQ for this type yet")
 	}
@@ -33,12 +38,63 @@ func Eq(a, b Any) bool {
 }
 
 // assoc[x; y] = eq[caar[y]; x] → cadar[y]; T → assoc[x; cdr[y]]]
-// func Assoc(x Any, y ConsType) Any {
-// 	if Eq(Caar(y), x) {
-// 		return Cadar(y)
-// 	}
-// 	return Assoc(x, Cdr(y))
+func Assoc(x Any, y ConsType) Any {
+	fmt.Println("start",Caar(y), x)
+	if Eq(Caar(y), x) {
+		fmt.Println("EQUAL",Caar(y), x, "stoppping", Cadar(y))
+		return Cadar(y)
+	}
+	fmt.Println("NOT EQUAL",Caar(y), x)
+
+	rest, castOk :=Cdr(y).(ConsType)
+	_ = castOk
+	if !castOk {
+		fmt.Println("Cast not okay",Cdr(y))
+		return nil
+	}
+	fmt.Println("rest >", rest)
+	fmt.Println("Stop2")
+
+	return Assoc(x, rest)
+}
+
+// func PrintCons(c ConsType) {
+// 	c(func(a,b Any ) Any {
+// 		fmt.Printf("Cons[%v,%v]\n",a,b)
+// 		return nil
+// 	})
 // }
+
+func (c ConsType) String() string {
+	s := "("
+	accum := func(input interface{}) {
+		//fmt.Println("{{", s)
+		if input == nil {
+			s += "nil)"
+			return
+		}
+		
+		s += fmt.Sprintf("%v,",input)
+	}
+
+	var recurse func (ConsType)
+	recurse = func( c ConsType) {
+		c(func (a, b Any) Any {
+			accum(a)
+			bCons, isCons := b.(ConsType);
+			if  !isCons{
+				accum(b)
+			}
+			if bCons == nil {
+				return nil
+			}
+				recurse(bCons)
+			return nil
+		})
+	}
+	recurse(c)
+	return s
+}
 
 func Cons(a, b Any) ConsType {
     return func(fn FuncType) Any {
@@ -134,5 +190,18 @@ func main() {
 	fmt.Println(list(car), list(cdr))
 	fmt.Println(list(car), list(cdr).(ConsType)(car))
 	fmt.Println(Cddr(list),Cadr(list), Cadar(list))
+
+	list2 := Cons(
+		Cons(12, Cons(
+			Cons(14, nil), 
+			Cons( 16, nil),
+		)), 
+		Cons(13, 
+			Cons(
+				Cons(15, nil),
+				Cons(17,nil),
+			)))
+	_ = list2
+	fmt.Println(">>",Assoc(13, list2), "..",list.String())
 }
 
