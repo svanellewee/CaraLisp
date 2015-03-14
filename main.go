@@ -63,6 +63,34 @@ func Atom(e Any) bool {
 	}
 }
 
+func List(vals ...Any) ConsType {
+	if len(vals) == 1 {
+		return Cons(vals[0], nil)
+	}
+	return Cons(vals[0], List(vals[1:]...))
+}
+
+// pair[x; y] = [null[x]∧null[y] → NIL; ¬atom[x]∧¬atom[y] → cons[list[car[x]; car[y]]; pair[cdr[x]; cdr[y]]]
+func Pair(a, b ConsType) ConsType {
+	//fmt.Println("Start",a,b)
+	if a == nil && b == nil {
+		//fmt.Println("a nil b nil")
+		return nil
+	}
+	if !Atom(a) && !Atom(b) {
+		//fmt.Printf("2atom atom %s, %s, %T, %T\n",a,b,a,b)
+
+		cdrA, _ := Cdr(a).(ConsType)
+		cdrB, _ := Cdr(b).(ConsType)
+
+		if cdrA == nil || cdrB == nil {
+			return Cons(List(Car(a), Car(b)), nil)
+		}
+		return Cons(List(Car(a), Car(b)), Pair(cdrA, cdrB))
+	}
+	return nil
+}
+
 /*
          ((12,(14|,16|)),(13,(15|,17|)))
 assoc[X; ((W ,(A, B   )),(X, (C  , D )),(Y,(E, F)))]
@@ -235,6 +263,9 @@ func main() {
 			nil))
 	fmt.Println("NewList >>", list3, Assoc(1, list3), Assoc(2, list3))
 	fmt.Println("atom test", Atom(list3), Atom(12), Atom("hello"))
+	fmt.Println("List test", List(12, 15, 12, 155, 8), List(17, 20))
+	fmt.Println("List test", List(List(12, 15), List(14, 155), 8), List(17, 20))
+	fmt.Println("Pairtest", Pair(List(12, 13, 20), List("bla", "Yadda", "yurface")))
 }
 
 // >>.. ((12,(14|,16|)),(13,(15|,17|)))

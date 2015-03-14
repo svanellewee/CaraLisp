@@ -108,6 +108,15 @@ func TestAtom(t *testing.T) {
 
 }
 
+func TestPair(t *testing.T) {
+	list1, list2 := List(12, 13, 20), List("this", "is", "SPARTAAAA!!!")
+	expected := "((12,this|),((13,is|),(20,SPARTAAAA!!!|)|))"
+	value := fmt.Sprintf("%v", Pair(list1, list2))
+	if value != expected {
+		t.Errorf("Pairs not generated correctly [%s] instead of [%s]", value, expected)
+	}
+}
+
 func TestEq(t *testing.T) {
 	var a, b interface{}
 	a = 12
