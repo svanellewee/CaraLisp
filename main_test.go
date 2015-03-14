@@ -89,7 +89,37 @@ func TestCddr(t *testing.T) {
 	}
 }
 
+func TestAtom(t *testing.T) {
+	if !Atom("string") {
+		t.Errorf("string not considered atom anymore")
+	}
+
+	if !Atom(12) {
+		t.Errorf("int not considered atom anymore")
+	}
+
+	if !Atom(true) {
+		t.Errorf("bool not considered atom anymore")
+	}
+
+	if Atom(Cons(1, 2)) {
+		t.Errorf("ConsType is now considered an atom")
+	}
+
+}
+
+func TestEq(t *testing.T) {
+	var a, b interface{}
+	a = 12
+	b = 13
+	if Eq(a, b) {
+		t.Errorf("Values are not equal Eq failed")
+	}
+
+}
+
 func TestAssoc(t *testing.T) {
+	// works like a map in a way
 	list2 := Cons(
 		Cons(12,
 			Cons(

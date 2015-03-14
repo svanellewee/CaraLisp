@@ -22,15 +22,30 @@ func Eq(a, b Any) bool {
 	switch aVal := a.(type) {
 	case int:
 		bVal, bCastOk := b.(int)
-		//fmt.Println("...", aVal , "vs", bVal)
 		if !bCastOk {
-			//fmt.Println(">>CastBad")
 			return false
 		}
 
 		retval := aVal == bVal
-		//fmt.Println(">>T",retval)
 		return retval
+	case string:
+		bVal, bCastOk := b.(string)
+		if !bCastOk {
+			return false
+		}
+
+		retval := aVal == bVal
+		return retval
+
+	case bool:
+		bVal, bCastOk := b.(bool)
+		if !bCastOk {
+			return false
+		}
+
+		retval := aVal == bVal
+		return retval
+
 	default:
 		panic("I dont support EQ for this type yet")
 	}
