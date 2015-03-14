@@ -7,7 +7,7 @@ type FuncType func(Any, Any) Any
 type ConsType func(FuncType) Any
 
 var (
-	car,cdr FuncType
+	car, cdr FuncType
 )
 
 func init() {
@@ -20,14 +20,14 @@ func init() {
 // eq [X; (X · A)] is undefined.
 func Eq(a, b Any) bool {
 	switch aVal := a.(type) {
-	case int :
+	case int:
 		bVal, bCastOk := b.(int)
 		//fmt.Println("...", aVal , "vs", bVal)
 		if !bCastOk {
 			//fmt.Println(">>CastBad")
 			return false
 		}
-		
+
 		retval := aVal == bVal
 		//fmt.Println(">>T",retval)
 		return retval
@@ -50,16 +50,16 @@ func Atom(e Any) bool {
 
 /*
          ((12,(14|,16|)),(13,(15|,17|)))
-assoc[X; ((W ,(A, B   )),(X, (C  , D )),(Y,(E, F)))] 
+assoc[X; ((W ,(A, B   )),(X, (C  , D )),(Y,(E, F)))]
 
 */
 // assoc[x; y] = eq[caar[y]; x] → cadar[y]; T → assoc[x; cdr[y]]]
 func Assoc(x Any, y ConsType) Any {
 	if Eq(Caar(y), x) {
-		return Cdar(y)   // differs from McArthy here (cadar vs cdar) not sure why ?
+		return Cdar(y) // differs from McArthy here (cadar vs cdar) not sure why ?
 	}
 
-	rest, castOk :=Cdr(y).(ConsType)
+	rest, castOk := Cdr(y).(ConsType)
 	_ = castOk
 	if !castOk {
 		return nil
@@ -67,49 +67,46 @@ func Assoc(x Any, y ConsType) Any {
 	return Assoc(x, rest)
 }
 
-
-
 func (c ConsType) String() string {
-	var printVal func(Any,Any) Any 
-	printVal = func(a,b Any) Any {
+	var printVal func(Any, Any) Any
+	printVal = func(a, b Any) Any {
 		var result string
 		if aVal, casOk := a.(ConsType); casOk {
-			result = fmt.Sprintf("%s",aVal(printVal))
+			result = fmt.Sprintf("%s", aVal(printVal))
 		} else {
-			result = fmt.Sprintf("%v",a)
+			result = fmt.Sprintf("%v", a)
 		}
 		if b == nil {
-			return fmt.Sprintf("%v|",result)
+			return fmt.Sprintf("%v|", result)
 		}
 		if bVal, casOk := b.(ConsType); casOk {
-			return fmt.Sprintf("(%v,%v)",result, bVal(printVal))
+			return fmt.Sprintf("(%v,%v)", result, bVal(printVal))
 		}
-		return result + "." +fmt.Sprintf("%v",b)
+		return result + "." + fmt.Sprintf("%v", b)
 	}
-	return fmt.Sprintf("%v",c(printVal))
+	return fmt.Sprintf("%v", c(printVal))
 }
-
 
 func Cons(a, b Any) ConsType {
-    return func(fn FuncType) Any {
-        return fn(a, b)
-    }
+	return func(fn FuncType) Any {
+		return fn(a, b)
+	}
 }
 func Car(cons ConsType) Any {
-    return cons(car)
+	return cons(car)
 }
 
 func Cdr(cons ConsType) Any {
-    return cons(cdr)
+	return cons(cdr)
 }
 
 func Cddr(cons ConsType) Any {
 	tail := Cdr(cons)
-	if tail == nil{
+	if tail == nil {
 		return nil
 	}
-	tcons,_ := tail.(ConsType)
-	if tcons == nil{
+	tcons, _ := tail.(ConsType)
+	if tcons == nil {
 		return tail
 	}
 	return tcons(cdr)
@@ -117,11 +114,11 @@ func Cddr(cons ConsType) Any {
 
 func Cadr(cons ConsType) Any {
 	tail := Cdr(cons)
-	if tail == nil{
+	if tail == nil {
 		return nil
 	}
-	tcons,_ := tail.(ConsType)
-	if tcons == nil{
+	tcons, _ := tail.(ConsType)
+	if tcons == nil {
 		return tail
 	}
 	return tcons(car)
@@ -132,7 +129,7 @@ func Cdar(cons ConsType) Any {
 	if head == nil {
 		return nil
 	}
-	tcons,_ := head.(ConsType)
+	tcons, _ := head.(ConsType)
 	if tcons == nil {
 		return head
 	}
@@ -144,7 +141,7 @@ func Caar(cons ConsType) Any {
 	if x == nil {
 		return nil
 	}
-	tcons,_ := x.(ConsType)
+	tcons, _ := x.(ConsType)
 	if tcons == nil {
 		return x
 	}
@@ -156,7 +153,7 @@ func Caddr(cons ConsType) Any {
 	if x == nil {
 		return nil
 	}
-	y,_ := x.(ConsType)
+	y, _ := x.(ConsType)
 	if y == nil {
 		return x
 	}
@@ -168,14 +165,14 @@ func Cadar(cons ConsType) Any {
 	if x == nil {
 		return nil
 	}
-	y,_ := x.(ConsType)
+	y, _ := x.(ConsType)
 	if y == nil {
 		return x
 	}
 	return y(car)
 }
 
-///func isAtom(cons ConsType) 
+///func isAtom(cons ConsType)
 
 func main() {
 	fmt.Printf("Hello, 世界\n")
@@ -186,42 +183,42 @@ func main() {
 	// fmt.Println(Cddr(list),Cadr(list), Cadar(list))
 
 	list2 := Cons(
-		Cons(12, 
+		Cons(12,
 			Cons(
-				Cons(14, nil), 
-				Cons( 16, nil),
+				Cons(14, nil),
+				Cons(16, nil),
 			)),
 		Cons(
-			Cons(13, 
+			Cons(13,
 				Cons(
 					Cons(15, nil),
-					Cons(17,nil),
+					Cons(17, nil),
 				)),
-			Cons ( 
-				Cons(16, 
+			Cons(
+				Cons(16,
 					Cons(
 						Cons(20, nil),
-						Cons(38,nil),
+						Cons(38, nil),
 					)),
 				nil)))
 	// _ = list2
 
-	fmt.Println("1>>",Assoc(12, list2))
-	fmt.Println("2>>",Assoc(13, list2))
-	fmt.Println("3>>",Assoc(16, list2))
-	fmt.Println("4>>",Assoc(18, list2))
-	fmt.Println(">>..",list2)
+	fmt.Println("1>>", Assoc(12, list2))
+	fmt.Println("2>>", Assoc(13, list2))
+	fmt.Println("3>>", Assoc(16, list2))
+	fmt.Println("4>>", Assoc(18, list2))
+	fmt.Println(">>..", list2)
 	/*
-         list3 = ( (1, ("hello", nil)),
-                   ( (2, ("byebye",nil)),
-                     nil) )
-        */
+	   list3 = ( (1, ("hello", nil)),
+	             ( (2, ("byebye",nil)),
+	               nil) )
+	*/
 	list3 := Cons(
-		      Cons(1, Cons("hello", nil)),
- 		      Cons(
-			      Cons(2, Cons("byebye",nil)),
-			      nil))
-	fmt.Println("NewList >>", list3, Assoc(1,list3), Assoc(2, list3))
+		Cons(1, Cons("hello", nil)),
+		Cons(
+			Cons(2, Cons("byebye", nil)),
+			nil))
+	fmt.Println("NewList >>", list3, Assoc(1, list3), Assoc(2, list3))
 	fmt.Println("atom test", Atom(list3), Atom(12), Atom("hello"))
 }
 
