@@ -36,6 +36,18 @@ func Eq(a, b Any) bool {
 	}
 	return false
 }
+
+func Atom(e Any) bool {
+	switch e.(type) {
+	case string, int, bool:
+		return true
+	case ConsType:
+		return false
+	default:
+		panic("Not supported type")
+	}
+}
+
 /*
          ((12,(14|,16|)),(13,(15|,17|)))
 assoc[X; ((W ,(A, B   )),(X, (C  , D )),(Y,(E, F)))] 
@@ -210,6 +222,7 @@ func main() {
 			      Cons(2, Cons("byebye",nil)),
 			      nil))
 	fmt.Println("NewList >>", list3, Assoc(1,list3), Assoc(2, list3))
+	fmt.Println("atom test", Atom(list3), Atom(12), Atom("hello"))
 }
 
 // >>.. ((12,(14|,16|)),(13,(15|,17|)))
