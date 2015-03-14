@@ -58,7 +58,7 @@ func Assoc(x Any, y ConsType) Any {
 	return Assoc(x, rest)
 }
 
-func PrintCons(c ConsType) string {
+func (c ConsType) String() string {
 	var printVal func(Any,Any) Any 
 	printVal = func(a,b Any) Any {
 		var result string
@@ -185,7 +185,7 @@ func main() {
 				Cons(17,nil),
 			)))
 	_ = list2
-	fmt.Println(">>",Assoc(13, list2), "..",PrintCons(list))
-	fmt.Println(">>..",PrintCons(list2))
+	fmt.Println(">>",Assoc(13, list2), "..",list)
+	fmt.Println(">>..",list2)
 }
 
