@@ -61,9 +61,14 @@ func Assoc(x Any, y ConsType) Any {
 func PrintCons(c ConsType) string {
 	var printVal func(Any,Any) Any 
 	printVal = func(a,b Any) Any {
-		result := fmt.Sprintf("%v",a)
+		var result string
+		if aVal, casOk := a.(ConsType); casOk {
+			result = fmt.Sprintf("%s",aVal(printVal))
+		} else {
+			result = fmt.Sprintf("%v",a)
+		}
 		if b == nil {
-			return result
+			return fmt.Sprintf("%v|",result)
 		}
 		if bVal, casOk := b.(ConsType); casOk {
 			return fmt.Sprintf("(%v,%v)",result, bVal(printVal))
