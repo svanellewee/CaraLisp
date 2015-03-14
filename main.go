@@ -110,6 +110,54 @@ func Assoc(x Any, y ConsType) Any {
 	return Assoc(x, rest)
 }
 
+const (
+	QUOTE = "'"
+	ATOM = "atom"
+	EQ = "="
+	COND = "cond"
+	CAR = "car"
+	CDR = "cdr"
+	CONS = "cons"
+	LABEL = "label"
+	LAMBDA = "lambda"
+)
+
+func Eval(elem Any, args ConsType) Any {
+	if Atom(elem) {
+		return Assoc(elem, args)
+	}
+	consElem,_ := elem.(ConsType)
+	if consElem == nil {
+		panic("WHat do I do here?")
+	}
+	carE := Car(consElem)
+	if Atom(carE) {
+		switch(carE) {
+		case QUOTE:
+			return Cadr(consElem)
+		case ATOM:
+			return Atom(Eval(Cadr(consElem), args))
+		case EQ:
+			return Eval(Cadr(consElem),args) == Eval(Caddr(consElem),args)
+		case COND:
+			panic("IMPLEMENT ME!")
+			return nil //EvCon(Cdr(consElem), args)
+		case CAR:
+			panic("IMPLEMENT ME!")
+			return nil //Car(Eval(Cadr(consElem), args))
+		case CDR:
+			panic("IMPLEMENT ME!")
+			return nil //Cdr(Eval(Cadr(consElem), args))
+		case CONS:
+			return Cons(Eval(Cadr(consElem),args), Eval(Caddr(consElem),args))
+		default:
+			panic("IMPLEMENT ME!")
+			return  nil //Eval(Cons(Assoc(Car(consElem),args), EvLis(Cdr(consElem),args)), args)
+		}
+	}
+	return nil
+}
+
 func (c ConsType) String() string {
 	var printVal func(Any, Any) Any
 	printVal = func(a, b Any) Any {
@@ -215,7 +263,6 @@ func Cadar(cons ConsType) Any {
 	return y(car)
 }
 
-///func isAtom(cons ConsType)
 
 func main() {
 	fmt.Printf("Hello, 世界\n")

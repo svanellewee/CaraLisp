@@ -167,3 +167,37 @@ func TestAssoc(t *testing.T) {
 }
 
 // Test Assoc!
+
+
+// Test Eval
+
+func TestEvalAssoc(t *testing.T) {
+	command := List(List(1,12), List(2,3))
+	expected := "12|"
+	value := fmt.Sprintf("%s",Eval(1,command))
+	if value != expected {
+		t.Errorf("Eval does not do assoc [%s] recieved,expected[%s]", value,expected)
+	}
+	expected2 := "3|"
+	value2 := fmt.Sprintf("%s",Eval(2,command))
+	if value2 != expected2 {
+		t.Errorf("Eval does not do assoc [%s] recieved,expected[%s]", value2,expected2)
+	}
+}
+
+
+// func TestEvalEq(t *testing.T) {
+// 	//command1 := List(1,1)
+// 	expected1 := true
+// 	//command2 := List(1,2)
+// 	expected2 := false
+// 	value := Eval(List(EQ,1,1),nil)
+// 	if value != expected1 {
+// 		t.Errorf("Eval does not do assoc [%s] recieved,expected[%s]", value,expected1)
+// 	}
+
+// 	value2 := Eval(List(EQ,1,2),nil)
+// 	if value2 != expected2 {
+// 		t.Errorf("Eval does not do assoc [%s] recieved,expected[%s]", value2,expected2)
+// 	}
+// }
