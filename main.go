@@ -58,43 +58,21 @@ func Assoc(x Any, y ConsType) Any {
 	return Assoc(x, rest)
 }
 
-// func PrintCons(c ConsType) {
-// 	c(func(a,b Any ) Any {
-// 		fmt.Printf("Cons[%v,%v]\n",a,b)
-// 		return nil
-// 	})
-// }
-
-func (c ConsType) String() string {
-	s := "("
-	accum := func(input interface{}) {
-		//fmt.Println("{{", s)
-		if input == nil {
-			s += "nil)"
-			return
+func PrintCons(c ConsType) string {
+	var printVal func(Any,Any) Any 
+	printVal = func(a,b Any) Any {
+		result := fmt.Sprintf("%v",a)
+		if b == nil {
+			return result
 		}
-		
-		s += fmt.Sprintf("%v,",input)
+		if bVal, casOk := b.(ConsType); casOk {
+			return fmt.Sprintf("(%v,%v)",result, bVal(printVal))
+		}
+		return result + "." +fmt.Sprintf("%v",b)
 	}
-
-	var recurse func (ConsType)
-	recurse = func( c ConsType) {
-		c(func (a, b Any) Any {
-			accum(a)
-			bCons, isCons := b.(ConsType);
-			if  !isCons{
-				accum(b)
-			}
-			if bCons == nil {
-				return nil
-			}
-				recurse(bCons)
-			return nil
-		})
-	}
-	recurse(c)
-	return s
+	return fmt.Sprintf("%v",c(printVal))
 }
+
 
 func Cons(a, b Any) ConsType {
     return func(fn FuncType) Any {
@@ -202,6 +180,7 @@ func main() {
 				Cons(17,nil),
 			)))
 	_ = list2
-	fmt.Println(">>",Assoc(13, list2), "..",list.String())
+	fmt.Println(">>",Assoc(13, list2), "..",PrintCons(list))
+	fmt.Println(">>..",PrintCons(list2))
 }
 
