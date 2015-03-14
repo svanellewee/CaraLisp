@@ -36,27 +36,26 @@ func Eq(a, b Any) bool {
 	}
 	return false
 }
+/*
+         ((12,(14|,16|)),(13,(15|,17|)))
+assoc[X; ((W ,(A, B   )),(X, (C  , D )),(Y,(E, F)))] 
 
+*/
 // assoc[x; y] = eq[caar[y]; x] → cadar[y]; T → assoc[x; cdr[y]]]
 func Assoc(x Any, y ConsType) Any {
-	fmt.Println("start",Caar(y), x)
 	if Eq(Caar(y), x) {
-		fmt.Println("EQUAL",Caar(y), x, "stoppping", Cadar(y))
-		return Cadar(y)
+		return Cdar(y)   // differs from McArthy here (cadar vs cdar) not sure why ?
 	}
-	fmt.Println("NOT EQUAL",Caar(y), x)
 
 	rest, castOk :=Cdr(y).(ConsType)
 	_ = castOk
 	if !castOk {
-		fmt.Println("Cast not okay",Cdr(y))
 		return nil
 	}
-	fmt.Println("rest >", rest)
-	fmt.Println("Stop2")
-
 	return Assoc(x, rest)
 }
+
+
 
 func (c ConsType) String() string {
 	var printVal func(Any,Any) Any 
@@ -168,24 +167,51 @@ func Cadar(cons ConsType) Any {
 
 func main() {
 	fmt.Printf("Hello, 世界\n")
-	list := Cons(12, Cons(14, Cons(16, nil)))
+	// list := Cons(12, Cons(14, Cons(16, nil)))
 
-	fmt.Println(list(car), list(cdr))
-	fmt.Println(list(car), list(cdr).(ConsType)(car))
-	fmt.Println(Cddr(list),Cadr(list), Cadar(list))
+	// fmt.Println(list(car), list(cdr))
+	// fmt.Println(list(car), list(cdr).(ConsType)(car))
+	// fmt.Println(Cddr(list),Cadr(list), Cadar(list))
 
 	list2 := Cons(
-		Cons(12, Cons(
-			Cons(14, nil), 
-			Cons( 16, nil),
-		)), 
-		Cons(13, 
+		Cons(12, 
 			Cons(
-				Cons(15, nil),
-				Cons(17,nil),
-			)))
-	_ = list2
-	fmt.Println(">>",Assoc(13, list2), "..",list)
+				Cons(14, nil), 
+				Cons( 16, nil),
+			)),
+		Cons(
+			Cons(13, 
+				Cons(
+					Cons(15, nil),
+					Cons(17,nil),
+				)),
+			Cons ( 
+				Cons(16, 
+					Cons(
+						Cons(20, nil),
+						Cons(38,nil),
+					)),
+				nil)))
+	// _ = list2
+
+	fmt.Println("1>>",Assoc(12, list2))
+	fmt.Println("2>>",Assoc(13, list2))
+	fmt.Println("3>>",Assoc(16, list2))
+	fmt.Println("4>>",Assoc(18, list2))
 	fmt.Println(">>..",list2)
+	/*
+         list3 = ( (1, ("hello", nil)),
+                   ( (2, ("byebye",nil)),
+                     nil) )
+        */
+	list3 := Cons(
+		      Cons(1, Cons("hello", nil)),
+ 		      Cons(
+			      Cons(2, Cons("byebye",nil)),
+			      nil))
+	fmt.Println("NewList >>", list3, Assoc(1,list3), Assoc(2, list3))
 }
 
+// >>.. ((12,(14|,16|)),(13,(15|,17|)))
+//      ((W, (A,  B)),  (X,(C, D)),    (Y,(E, F)))
+// >>.. (12,(14|,16|),13,(15|,17|))
